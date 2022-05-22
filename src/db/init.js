@@ -1,11 +1,15 @@
 const mongoose = require("mongoose");
-const Hotel = require("../models/hotels");
 
-const getData = async () => {
-  const data = await Hotel.find({});
-  return data;
-};
+const mongoDBconnectionString = "mongodb://127.0.0.1/hotel-booking-api";
 
-module.exports = {
-  getData,
-};
+mongoose
+  .connect(mongoDBconnectionString, {
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
+  })
+  .then(() => {
+    console.log("DB Connected");
+  })
+  .catch((e) => {
+    console.log(e);
+  });

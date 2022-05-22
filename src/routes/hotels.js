@@ -2,7 +2,6 @@ const { Router } = require("express");
 const auth = require("../middlewares/auth");
 const Hotel = require("../models/hotels");
 const Room = require("../Models/rooms");
-const uploadHotels = require("../seedDB");
 // import all controllers
 // import SessionController from './app/controllers/SessionController';
 
@@ -35,6 +34,7 @@ routes.get("/api/v1/hotels", async (req, res) => {
 routes.get("/api/v1/hotels/:id", async (req, res) => {
   try {
     const hotel = await Hotel.findById(req.params.id).populate("rooms");
+
     res.status(200).send({
       hotel: hotel,
     });

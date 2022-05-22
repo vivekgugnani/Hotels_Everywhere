@@ -2,8 +2,10 @@ const Booking = require("./bookings");
 
 const mongoose = require("mongoose");
 const validator = require("validator");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
-const secret = "This is my secret" || process.env.JWT_SECRET;
+const secret = "this is my secret" || process.env.JWT_SECRET;
 
 const userSchema = new mongoose.Schema(
   {
@@ -37,6 +39,12 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    bookings: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Booking",
+      },
+    ],
     tokens: [
       {
         token: {

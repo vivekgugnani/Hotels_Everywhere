@@ -7,7 +7,10 @@ const BookingSchema = new mongoose.Schema(
       required: true,
       ref: "Room",
     },
-
+    status: {
+      type: String,
+      required: true,
+    },
     user: {
       type: mongoose.Types.ObjectId,
       required: true,
@@ -44,7 +47,12 @@ const BookingSchema = new mongoose.Schema(
   }
 );
 
-const Booking = mongoose.mode;
-"Booking", BookingSchema;
+BookingSchema.virtual("users", {
+  ref: "User",
+  localField: "_id",
+  foreignField: "bookings",
+});
+
+const Booking = mongoose.model("Booking", BookingSchema);
 
 module.exports = Booking;

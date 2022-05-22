@@ -1,4 +1,3 @@
-require("../mongoose/init");
 const mongoose = require("mongoose");
 
 const hotelSchema = new mongoose.Schema(
