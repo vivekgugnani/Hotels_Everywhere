@@ -4,8 +4,39 @@ const auth = require("../middlewares/auth");
 
 const userRoutes = Router();
 
+/**
+ * @swagger
+ * /api/v1/user/login:
+ *  post:
+ *    description: Route to authenticate user with email and password
+ *    consumes:
+ *      - application/json
+ *    parameters:
+ *      - in: body
+ *        name: user
+ *        schema:
+ *          type: object
+ *          properties:
+ *            email:
+ *              type: string
+ *              example: vivek@gmail.com
+ *            password:
+ *              type: string
+ *              example: qwertuiop
+ *
+ *    responses:
+ *      '200':
+ *        description: User got authenticated Successfully and user token is generated
+ *      '400':
+ *        description: User authentication got failed
+ *
+ *
+ *
+ */
+
 userRoutes.post("/api/v1/user/login", async (req, res) => {
   try {
+    console.log(req.body);
     const user = await User.findByCredentials(
       req.body.email,
       req.body.password
@@ -14,9 +45,41 @@ userRoutes.post("/api/v1/user/login", async (req, res) => {
 
     res.send(user);
   } catch (e) {
-    res.status(400).send(e);
+    res.status(400).send({
+      message: "Authentication Failed!",
+    });
   }
 });
+
+/**
+ * @swagger
+ * /api/v1/user/signup:
+ *  post:
+ *    description: Route to signup user
+ *    consumes:
+ *      - application/json
+ *    parameters:
+ *      - in: body
+ *        name: user
+ *        schema:
+ *          type: object
+ *          properties:
+ *            email:
+ *              type: string
+ *              example: vivek2@gmail.com
+ *            password:
+ *              type: string
+ *              example: qwertyuiop
+ *            name:
+ *              type: string
+ *              example: Vivek2
+ *
+ *    responses:
+ *      '201':
+ *        description: User account generated successfully
+ *      '400':
+ *        description: user already created
+ */
 
 userRoutes.post("/api/v1/user/signup", async (req, res) => {
   const user = new User(req.body);
@@ -24,14 +87,37 @@ userRoutes.post("/api/v1/user/signup", async (req, res) => {
     await user.save();
 
     const token = await user.generateAuthToken();
-    console.log({
-      message: "User Created",
-    });
     res.status(201).send(user);
   } catch (e) {
-    res.status(400).send(e);
+    res.status(400).send({
+      message: "User Already created",
+    });
   }
 });
+
+/**
+ *
+ * @swagger
+ *
+ * securityDefinitions:
+ *  Bearer:
+ *    type: apiKey
+ *    name: Authorization
+ *    in: header
+ *
+ * paths:
+ *  /api/v1/user/logout:
+ *    post:
+ *      description: Route to signup user
+ *      security:
+ *        - Bearer: []
+ *
+ *      responses:
+ *        '200':
+ *          description: Successfully Logged out
+ *        '401':
+ *          description: Authentication Failed
+ */
 
 userRoutes.post("/api/v1/user/logout", auth, async (req, res) => {
   try {
@@ -39,11 +125,13 @@ userRoutes.post("/api/v1/user/logout", auth, async (req, res) => {
       return token.token !== req.token;
     });
     await req.user.save();
-    res.send({
+    res.status(200).send({
       message: "Successfully logged out",
     });
   } catch (error) {
-    res.status(500).send();
+    res.status(401).send({
+      message: "Authentication Failed",
+    });
   }
 });
 
