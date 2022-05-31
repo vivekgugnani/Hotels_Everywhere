@@ -1,11 +1,14 @@
-const { Router } = require("express");
-const mongoose = require("mongoose");
-const auth = require("../middlewares/auth");
-const Booking = require("../models/bookings");
-const User = require("../models/users");
+import { Router } from "express";
+import {
+  newBooking,
+  showBooking,
+  cancelBooking,
+} from "../controllers/hotel-booking.js";
+import auth from "../middlewares/auth.js";
+import Booking from "../models/bookings.js";
+import User from "../models/users.js";
 
 const bookingRoutes = new Router();
-
 //Create Bookings
 
 /**
@@ -50,7 +53,7 @@ const bookingRoutes = new Router();
  *              example: 1653304560596
  *      responses:
  *        '200':
- *          description: Successfully Logged out
+ *          description: Successfully booked hotel
  *        '401':
  *          description: Authentication Failed
  *        '400':
@@ -58,86 +61,7 @@ const bookingRoutes = new Router();
  *
  */
 
-bookingRoutes.post("/api/v1/booking", auth, async (req, res) => {
-  const user = req.user.id;
-  const room = req.body.roomid;
-
-  const checkInDate = new Date(parseInt(req.body.checkInDate));
-  const checkOutDate = new Date(parseInt(req.body.checkOutDate));
-
-  const amountPaid = req.body.amountPaid;
-  const daysOfStay = req.body.daysOfStay;
-  const paidAt = new Date(parseInt(req.body.paidAt));
-  if (
-    !(
-      user ||
-      room ||
-      checkInDate ||
-      checkOutDate ||
-      amountPaid ||
-      daysOfStay ||
-      paidAt
-    )
-  ) {
-    res.status(400).send({
-      message: "Invalid Parameters",
-    });
-  }
-  const bookRoom = {
-    user,
-    room,
-    checkInDate,
-    checkOutDate,
-    amountPaid,
-    daysOfStay,
-    paidAt,
-  };
-  try {
-    const bookedRooms = await Booking.find({});
-
-    const sameDates = bookedRooms.filter((room) => {
-      return (
-        checkInDate >= room.checkInDate &&
-        checkInDate <= room.checkOutDate &&
-        room.status !== "Cancelled"
-      );
-    });
-    let isAlreadyBooked = false;
-    sameDates.map((rooms) => {
-      if (rooms.room.toString() === room) {
-        isAlreadyBooked = true;
-      }
-    });
-    console.log(isAlreadyBooked);
-    if (isAlreadyBooked) {
-      res.status(400).send({
-        message: "Room is Already Booked",
-      });
-      return;
-    }
-    bookRoom.status = "Confirmed";
-    const book = new Booking(bookRoom);
-    console.log(book._id);
-    req.user.bookings = req.user.bookings ? req.user.bookings : [];
-    req.user.bookings.push(book._id);
-    await User.updateOne(
-      {
-        _id: req.user._id,
-      },
-      req.user
-    );
-    //console.log(book);
-    await book.save();
-
-    res.send({
-      bookRoom,
-    });
-  } catch (e) {
-    res.status(400).send({
-      message: "Error is " + e,
-    });
-  }
-});
+bookingRoutes.post("/api/v1/booking", auth, newBooking);
 
 // Show Bookings
 
@@ -167,16 +91,7 @@ bookingRoutes.post("/api/v1/booking", auth, async (req, res) => {
  *          description: some Error
  */
 
-bookingRoutes.get("/api/v1/booking", auth, async (req, res) => {
-  try {
-    const user = await User.findById(req.user._id).populate("bookings");
-    res.status(200).send(user.bookings);
-  } catch (e) {
-    res.status(400).send({
-      message: e,
-    });
-  }
-});
+bookingRoutes.get("/api/v1/booking", auth, showBooking);
 
 // Cancellation Booking
 
@@ -215,36 +130,6 @@ bookingRoutes.get("/api/v1/booking", auth, async (req, res) => {
  *        '301':
  *          description: Already Cancelled / No such booking exist
  */
-bookingRoutes.patch("/api/v1/booking/:id", auth, async (req, res) => {
-  try {
-    const book = await Booking.findById(req.params.id);
-    if (book === undefined) {
-      res.status(400).send({
-        message: "No such booking Exist",
-      });
-    }
-    if (book.status === "Cancelled") {
-      res.status(400).send({
-        message: "Already Cancelled",
-      });
-    }
-    await Booking.findOneAndUpdate(
-      {
-        _id: req.params.id,
-      },
-      {
-        status: "Cancelled",
-      }
-    );
+bookingRoutes.patch("/api/v1/booking/:id", auth, cancelBooking);
 
-    res.status(200).send({
-      message: "Successfully Cancelled",
-    });
-  } catch (e) {
-    res.status(400).send({
-      message: "There is some Error: " + e,
-    });
-  }
-});
-
-module.exports = bookingRoutes;
+export default bookingRoutes;

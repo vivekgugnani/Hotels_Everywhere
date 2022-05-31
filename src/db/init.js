@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const mongoDBconnectionString = "mongodb://127.0.0.1/hotel-booking-api";
 

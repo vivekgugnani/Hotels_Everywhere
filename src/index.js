@@ -1,13 +1,19 @@
-const express = require("express");
-const hotelRoutes = require("./routes/hotels");
-const userRoutes = require("./routes/user");
-const swaggerJsDoc = require("swagger-jsdoc");
-const swaggerUI = require("swagger-ui-express");
-const bookingRoutes = require("./routes/bookings");
-require("./db/init");
+import express from "express";
+import hotelRoutes from "./routes/hotels.js";
+import userRoutes from "./routes/user.js";
+import swaggerJsDoc from "swagger-jsdoc";
+import swaggerUI from "swagger-ui-express";
+import bookingRoutes from "./routes/bookings.js";
+import "./db/init.js";
 
 const port = process.env.PORT || 4000;
 const app = express();
+
+app.use(express.json());
+
+app.use(hotelRoutes);
+app.use(userRoutes);
+app.use(bookingRoutes);
 
 const swaggerOptions = {
   swaggerDefinition: {
@@ -24,11 +30,6 @@ const swaggerOptions = {
 };
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
-
-app.use(express.json());
-app.use(hotelRoutes);
-app.use(userRoutes);
-app.use(bookingRoutes);
 
 app.listen(port, () => {
   console.log(`Express is listening on port ${port}`);

@@ -1,7 +1,7 @@
-const jwt = require("jsonwebtoken");
-const User = require("../models/users");
+import jwt from "jsonwebtoken";
+import User from "../models/users.js";
 
-const secret = "this is my secret" || process.env.JWT_SECRET;
+const secret = "thisismysecret" || process.env.JWT_SECRET;
 const auth = async (req, res, next) => {
   try {
     const token = req.headers.authorization.replace("Bearer ", "");
@@ -14,15 +14,18 @@ const auth = async (req, res, next) => {
     });
 
     if (!user) {
-      throw new Error();
+      throw new Error("Authentication failed");
     }
 
     req.token = token;
     req.user = user;
     next();
   } catch (e) {
-    res.status(401).send("Authentication Failed!");
+    res.status(401).send({
+      message: "Authorization Failed!",
+      e: e,
+    });
   }
 };
 
-module.exports = auth;
+export default auth;

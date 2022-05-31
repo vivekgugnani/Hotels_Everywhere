@@ -1,11 +1,11 @@
-const Booking = require("./bookings");
+import Booking from "./bookings.js";
 
-const mongoose = require("mongoose");
-const validator = require("validator");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+import mongoose from "mongoose";
+import validator from "validator";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
-const secret = "this is my secret" || process.env.JWT_SECRET;
+const secret = process.env.JWT_SECRET || "thisismysecret";
 
 const userSchema = new mongoose.Schema(
   {
@@ -104,4 +104,4 @@ userSchema.pre("remove", async function (next) {
 
 const User = mongoose.model("User", userSchema);
 
-module.exports = User;
+export default User;

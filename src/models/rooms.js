@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const roomsSchema = new mongoose.Schema(
   {
@@ -22,4 +22,4 @@ roomsSchema.virtual("hotels", {
 });
 
 const Room = new mongoose.model("Room", roomsSchema);
-module.exports = Room;
+export default Room;

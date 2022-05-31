@@ -1,6 +1,6 @@
-const { Router } = require("express");
-const User = require("../models/users");
-const auth = require("../middlewares/auth");
+import { Router } from "express";
+import auth from "../middlewares/auth.js";
+import { loginUser, signUpUser, logOutUser } from "../controllers/user.js";
 
 const userRoutes = Router();
 
@@ -34,22 +34,7 @@ const userRoutes = Router();
  *
  */
 
-userRoutes.post("/api/v1/user/login", async (req, res) => {
-  try {
-    console.log(req.body);
-    const user = await User.findByCredentials(
-      req.body.email,
-      req.body.password
-    );
-    const token = await user.generateAuthToken();
-
-    res.send(user);
-  } catch (e) {
-    res.status(400).send({
-      message: "Authentication Failed!",
-    });
-  }
-});
+userRoutes.post("/api/v1/user/login", loginUser);
 
 /**
  * @swagger
@@ -81,19 +66,7 @@ userRoutes.post("/api/v1/user/login", async (req, res) => {
  *        description: user already created
  */
 
-userRoutes.post("/api/v1/user/signup", async (req, res) => {
-  const user = new User(req.body);
-  try {
-    await user.save();
-
-    const token = await user.generateAuthToken();
-    res.status(201).send(user);
-  } catch (e) {
-    res.status(400).send({
-      message: "User Already created",
-    });
-  }
-});
+userRoutes.post("/api/v1/user/signup", signUpUser);
 
 /**
  *
@@ -119,20 +92,6 @@ userRoutes.post("/api/v1/user/signup", async (req, res) => {
  *          description: Authentication Failed
  */
 
-userRoutes.post("/api/v1/user/logout", auth, async (req, res) => {
-  try {
-    req.user.tokens = req.user.tokens.filter((token) => {
-      return token.token !== req.token;
-    });
-    await req.user.save();
-    res.status(200).send({
-      message: "Successfully logged out",
-    });
-  } catch (error) {
-    res.status(401).send({
-      message: "Authentication Failed",
-    });
-  }
-});
+userRoutes.post("/api/v1/user/logout", auth, logOutUser);
 
-module.exports = userRoutes;
+export default userRoutes;
