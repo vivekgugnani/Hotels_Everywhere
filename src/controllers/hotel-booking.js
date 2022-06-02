@@ -122,4 +122,20 @@ const cancelBooking = async (req, res) => {
   }
 };
 
-export { newBooking, showBooking, cancelBooking };
+const changeBookingStatus = async (req, res) => {
+  const bookingid = req.params.id;
+  const bookingStatus = req.body.status;
+  try {
+    const book = await Booking.findByIdAndUpdate(bookingid, {
+      status: bookingStatus,
+    });
+
+    res.status(200).send(book);
+  } catch (e) {
+    res.status(500).send({
+      message: e,
+    });
+  }
+};
+
+export { newBooking, showBooking, cancelBooking, changeBookingStatus };

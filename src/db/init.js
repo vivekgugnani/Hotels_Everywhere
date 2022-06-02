@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
-const mongoDBconnectionString = "mongodb://127.0.0.1/hotel-booking-api";
+const mongoDBconnectionString =
+  process.env.MONGO_URL || "mongodb://127.0.0.1/hotel-booking-api";
 
 mongoose
   .connect(mongoDBconnectionString, {

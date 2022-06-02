@@ -3,8 +3,9 @@ import {
   newBooking,
   showBooking,
   cancelBooking,
+  changeBookingStatus,
 } from "../controllers/hotel-booking.js";
-import auth from "../middlewares/auth.js";
+import { auth, isAdmin } from "../middlewares/auth.js";
 import Booking from "../models/bookings.js";
 import User from "../models/users.js";
 
@@ -115,6 +116,7 @@ bookingRoutes.get("/api/v1/booking", auth, showBooking);
  *        schema:
  *          type: string
  *          example: 628b7181128b35ba7c97db19
+ *
  *        required: true
  *        description: Numeric ID of booking to cancel booking
  *      security:
@@ -131,5 +133,56 @@ bookingRoutes.get("/api/v1/booking", auth, showBooking);
  *          description: Already Cancelled / No such booking exist
  */
 bookingRoutes.patch("/api/v1/booking/:id", auth, cancelBooking);
+
+/**
+ *
+ * @swagger
+ *
+ * securityDefinitions:
+ *  Bearer:
+ *    type: apiKey
+ *    name: Authorization
+ *    in: header
+ *
+ * paths:
+ *  /api/v1/admin/booking/{id}:
+ *    patch:
+ *      description: Route to Change Booking status by hotel manager/admin
+ *      parameters:
+ *      - in: path
+ *        name: id
+ *        schema:
+ *          type: string
+ *          example: 6294d7f91027589006a77ac3
+ *        required: true
+ *      - in: body
+ *        name: bookings
+ *        schema:
+ *          type: object
+ *          properties:
+ *            status:
+ *              type: string
+ *              example: Fulfilled
+ *        description: Numeric ID of booking to change booking status
+ *      security:
+ *        - Bearer: []
+ *
+ *      responses:
+ *        '200':
+ *          description: Successfully changed status
+ *        '401':
+ *          description: Authentication Failed
+ *        '400':
+ *          description: user is not an admin
+ *        '500':
+ *          description: No such booking exist
+ */
+
+bookingRoutes.patch(
+  "/api/v1/admin/booking/:id",
+  auth,
+  isAdmin,
+  changeBookingStatus
+);
 
 export default bookingRoutes;

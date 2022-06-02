@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import User from "../models/users.js";
 
-const secret = "thisismysecret" || process.env.JWT_SECRET;
+const secret = process.env.JWT_SECRET || "thisismysecret";
 const auth = async (req, res, next) => {
   try {
     const token = req.headers.authorization.replace("Bearer ", "");
@@ -28,4 +28,14 @@ const auth = async (req, res, next) => {
   }
 };
 
-export default auth;
+const isAdmin = (req, res, next) => {
+  if (!req.user.isAdmin) {
+    res.status(400).send({
+      message: "User is not an admin",
+    });
+    return;
+  }
+
+  next();
+};
+export { auth, isAdmin };
