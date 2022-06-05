@@ -1,6 +1,11 @@
 import { Router } from "express";
 import { auth } from "../middlewares/auth.js";
-import { loginUser, signUpUser, logOutUser } from "../controllers/user.js";
+import {
+  loginUser,
+  signUpUser,
+  logOutUser,
+  deleteUser,
+} from "../controllers/user.js";
 
 const userRoutes = Router();
 
@@ -8,6 +13,8 @@ const userRoutes = Router();
  * @swagger
  * /api/v1/user/login:
  *  post:
+ *    tags:
+ *      - User Api
  *    description: Route to authenticate user with email and password
  *    consumes:
  *      - application/json
@@ -27,8 +34,8 @@ const userRoutes = Router();
  *    responses:
  *      '200':
  *        description: User got authenticated Successfully and user token is generated
- *      '400':
- *        description: User authentication got failed
+ *      '500':
+ *        description: User authentication got failed. or maybe some server error
  *
  *
  *
@@ -40,6 +47,8 @@ userRoutes.post("/api/v1/user/login", loginUser);
  * @swagger
  * /api/v1/user/signup:
  *  post:
+ *    tags:
+ *      - User Api
  *    description: Route to signup user
  *    consumes:
  *      - application/json
@@ -51,19 +60,19 @@ userRoutes.post("/api/v1/user/login", loginUser);
  *          properties:
  *            email:
  *              type: string
- *              example: vivek2@gmail.com
+ *              example: vivek@gmail.com
  *            password:
  *              type: string
- *              example: qwertyuiop
+ *              example: qwertuiop
  *            name:
  *              type: string
- *              example: Vivek2
+ *              example: Vivek
  *
  *    responses:
  *      '201':
  *        description: User account generated successfully
- *      '400':
- *        description: user already created
+ *      '500':
+ *        description: user already created. or some server error
  */
 
 userRoutes.post("/api/v1/user/signup", signUpUser);
@@ -81,6 +90,8 @@ userRoutes.post("/api/v1/user/signup", signUpUser);
  * paths:
  *  /api/v1/user/logout:
  *    post:
+ *      tags:
+ *        - User Api
  *      description: Route to signup user
  *      security:
  *        - Bearer: []
@@ -90,8 +101,40 @@ userRoutes.post("/api/v1/user/signup", signUpUser);
  *          description: Successfully Logged out
  *        '401':
  *          description: Authentication Failed
+ *        '500':
+ *          description: Some server error
  */
 
 userRoutes.post("/api/v1/user/logout", auth, logOutUser);
+
+/**
+ *
+ * @swagger
+ *
+ * securityDefinitions:
+ *  Bearer:
+ *    type: apiKey
+ *    name: Authorization
+ *    in: header
+ *
+ * paths:
+ *  /api/v1/user/delete:
+ *    delete:
+ *      tags:
+ *        - User Api
+ *      description: Route to delete user and it's bookings.
+ *      security:
+ *        - Bearer: []
+ *
+ *      responses:
+ *        '200':
+ *          description: User successfully deleted
+ *        '401':
+ *          description: Authentication Failed
+ *        '500':
+ *          description: Some Server Error
+ */
+
+userRoutes.delete("/api/v1/user/delete", auth, deleteUser);
 
 export default userRoutes;

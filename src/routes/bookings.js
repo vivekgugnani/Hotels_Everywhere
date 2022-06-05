@@ -26,6 +26,8 @@ const bookingRoutes = new Router();
  *  /api/v1/booking:
  *    post:
  *      description: Book a Hotel
+ *      tags:
+ *        - Booking Api
  *      security:
  *        - Bearer: []
  *      parameters:
@@ -80,6 +82,8 @@ bookingRoutes.post("/api/v1/booking", auth, newBooking);
  *  /api/v1/booking:
  *    get:
  *      description: Route to view bookings
+ *      tags:
+ *        - Booking Api
  *      security:
  *        - Bearer: []
  *
@@ -110,6 +114,8 @@ bookingRoutes.get("/api/v1/booking", auth, showBooking);
  *  /api/v1/booking/{id}:
  *    patch:
  *      description: Route to Cancel Booking
+ *      tags:
+ *        - Booking Api
  *      parameters:
  *      - in: path
  *        name: id
@@ -147,6 +153,8 @@ bookingRoutes.patch("/api/v1/booking/:id", auth, cancelBooking);
  * paths:
  *  /api/v1/admin/booking/{id}:
  *    patch:
+ *      tags:
+ *        - Booking Api
  *      description: Route to Change Booking status by hotel manager/admin
  *      parameters:
  *      - in: path

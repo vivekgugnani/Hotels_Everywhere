@@ -19,11 +19,15 @@ const swaggerOptions = {
   swaggerDefinition: {
     info: {
       title: "Hotel Booking API",
-      description: "Hotel Customer Endpoints",
+      description: "Hotel Booking Endpoints",
       contact: {
         name: "Vivek",
       },
-      servers: ["http://localhost:4000"],
+      servers: [
+        "http://localhost:4000",
+        "https://hotelseverywhere.azurewebsites.net/api-doc/",
+      ],
+      version: "1.0.0",
     },
   },
   apis: ["./src/routes/*.js"],

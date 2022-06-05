@@ -8,7 +8,9 @@ const hotelRoutes = new Router();
  * @swagger
  * /api/v1/hotels:
  *  post:
- *    description: Use to get all Hotels that are not booked within speficied CheckIn and CheckOut
+ *    tags:
+ *      - Hotel Api
+ *    description: Use to get all Hotels that are not booked within speficied CheckIn and CheckOut. It also comes with redis caching to make proess super fast.<br>It just requires the city where you are searching and the checkin and checkout timestamps.
  *    consumes:
  *      - application/json
  *    parameters:
@@ -43,7 +45,9 @@ hotelRoutes.post("/api/v1/hotels", caching, getHotels);
  * @swagger
  * /api/v1/hotels/{id}:
  *  get:
- *    description: Use to get details of particular hotel
+ *    tags:
+ *      - Hotel Api
+ *    description: Use to get details of particular hotel. It just requires id of that particular hotel you are searching for.
  *    parameters:
  *    - in: path
  *      name: id
