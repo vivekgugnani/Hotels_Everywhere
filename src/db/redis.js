@@ -10,9 +10,12 @@ const client = redis.createClient({
   username: username,
   password: password,
 });
-
-await client.connect().then(() => {
-  console.log("Redis connected Successfully");
-});
+try {
+  client.connect().then(() => {
+    console.log("Redis connected Successfully");
+  });
+} catch (e) {
+  console.log(e);
+}
 
 export default client;
