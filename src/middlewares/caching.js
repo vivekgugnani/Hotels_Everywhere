@@ -16,6 +16,7 @@ const caching = (req, res, next) => {
         console.log(e);
       });
   } catch (e) {
+    next();
     console.log(e);
   }
 };
