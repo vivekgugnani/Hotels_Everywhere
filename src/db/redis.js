@@ -1,15 +1,15 @@
 import redis from "redis";
 
 const redisPort = process.env.REDIS_PORT || 6379;
-const url =
-  process.env.REDIS_URL ||
-  "redis://redis-19521.c301.ap-south-1-1.ec2.cloud.redislabs.com:19521";
-const username = process.env.REDIS_USERNAME || "default";
-const password =
-  process.env.REDIS_PASSWORD || "PTlrrs9MvtdDrtOIELAtflKYAvnQg4oM";
+const url = process.env.REDIS_URL || "redis://127.0.0.1:6379";
+const username = process.env.REDIS_USERNAME;
+const password = process.env.REDIS_PASSWORD;
 
 const client = redis.createClient({
-  url: url,
+  socket: {
+    port: 19521,
+    host: "redis-19521.c301.ap-south-1-1.ec2.cloud.redislabs.com",
+  },
   username: username,
   password: password,
   retry_strategy: (options) => {
@@ -30,9 +30,16 @@ const client = redis.createClient({
 
 (async () => {
   // Connect to redis server
-  await client.connect().then(() => {
-    console.log("Redis connected");
-  });
+  await client.connect();
 })();
+
+console.log("Attempting to connect to redis");
+client.on("connect", () => {
+  console.log("Redis Connected!");
+});
+
+client.on("error", (err) => {
+  console.log(`Error:${err}`);
+});
 
 export default client;
